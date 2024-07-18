@@ -21,7 +21,6 @@ int dec_to_hexa_conversion(int decimal_Number)
 
 int main()
 {
-
     int Number;
     printf("Input a decimal number = ");
     scanf("%d", &Number);
