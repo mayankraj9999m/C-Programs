@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void get_cofactor_matrix(int row, int c, int x, int new_matrix[x][x], int matrix[x][x])
+void get_cofactor_matrix(int row, int c, int **new_matrix, int **matrix)
 {
     int i = 0, j = 0;
     for (int row1 = 0; row1 < row; row1++)
@@ -21,19 +21,34 @@ void get_cofactor_matrix(int row, int c, int x, int new_matrix[x][x], int matrix
     }
 }
 
-int determinant_of_a_matrix(int row, int x, int matrix[x][x])
+int determinant_of_a_matrix(int row, int x, int **matrix)
 {
     int det = 0;
     if (row == 1)
+    {
         return matrix[0][0];
-    int new_matrix[x][x]; // to store cofactor matrix
+    }
+
+    // int new_matrix[row-1][row-1]; // to store cofactor matrix
+    int **new_matrix = (int **)malloc((row - 1) * sizeof(int *));
+    for (int i = 0; i < (row - 1); i++)
+    {
+        new_matrix[i] = (int *)malloc((row - 1) * sizeof(int));
+    }
+
     int sign = 1;
     for (int c = 0; c < row; c++)
     {
-        get_cofactor_matrix(row, c, x, new_matrix, matrix);
+        get_cofactor_matrix(row, c, new_matrix, matrix);
         det += sign * matrix[0][c] * determinant_of_a_matrix((row - 1), x, new_matrix);
         sign = -sign;
     }
+
+    for (int i = 0; i < row - 1; i++)
+    {
+        free(new_matrix[i]);
+    }
+    free(new_matrix);
     return det;
 }
 
@@ -49,7 +64,13 @@ int main()
     printf("Enter dimension of your matrix(e.g, 4 --> 4x4) = ");
     int x;
     scanf("%d", &x);
-    int matrix[x][x];
+    // int matrix[x][x];
+    // Now , we will allocate memory to matrix using dynamic memory allocation
+    int **matrix = (int **)malloc(x * sizeof(int *));
+    for (int i = 0; i < x; i++)
+    {
+        matrix[i] = (int *)malloc(x * sizeof(int));
+    }
     for (int i = 0; i < x; i++)
     {
         for (int j = 0; j < x; j++)
@@ -71,7 +92,15 @@ int main()
         }
         printf(" ]\n");
     }
+    
     printf("The Determinant of the matrix is %d", determinant_of_a_matrix(x, x, matrix));
+
+    // Freeing Memory
+    for (int i = 0; i < x; i++)
+    {
+        free(matrix[i]);
+    }
+    free(matrix);
 
     press_any_key_to_exit();
 
